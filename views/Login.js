@@ -1,15 +1,47 @@
 import { Image, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { Component } from 'react'
 import { EvilIcons, MaterialCommunityIcons } from '@expo/vector-icons'
+import { BASE_URL } from './Constants';
 
 export default class Login extends Component {
     constructor(props) {
         super(props)
 
         this.state = {
-            isChecked: false
+            isChecked: false,
+            userID: "",
+            password: ""
         }
     }
+    onLogin = () => {
+        const requestOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(
+                {
+                    "userid": this.state.userID,
+                    "password": this.state.password
+                }
+            )
+        };
+        if (this.state.userID !== '' && this.state.password !== ''){
+            fetch(`${BASE_URL}/api/login`, requestOptions)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.Code == '200') {
+                        this.props.navigation.navigate('Home')
+                    }
+                    else
+                        alert(data.msg)
+                })
+        }
+        else {
+            alert("Field Can't Be Blank.")
+        }
+    }
+
     render() {
         return (
             <View style={styles.body}>
@@ -22,14 +54,14 @@ export default class Login extends Component {
                 </View>
                 <View style={styles.form}>
                     <View style={{ width: "60%", alignSelf: "center", marginTop: "7%" }}>
-                        <Text style={{ fontSize: 23, color: "#1b00ff", fontWeight: "bold", textAlign: "center" }}>Login To Drugs Bazar</Text>
+                        <Text style={{ fontSize: 23, color: "#1b00ff", fontWeight: "bold", textAlign: "center" }}>Login To DrugsBazar</Text>
                     </View>
                     <View style={styles.textInput}>
                         <TextInput placeholder='User Name' placeholderTextColor={"gray"} style={{ width: "80%", marginLeft: "6%" }} onChangeText={(text) => this.setState({ userID: text })} />
                         <EvilIcons name="user" size={32} color="gray" />
                     </View>
                     <View style={styles.textInput}>
-                        <TextInput placeholder='Password' placeholderTextColor={"gray"} style={{ width: "80%", marginLeft: "6%" }} onChangeText={(text) => this.setState({ userID: text })} secureTextEntry />
+                        <TextInput placeholder='Password' placeholderTextColor={"gray"} style={{ width: "80%", marginLeft: "6%" }} onChangeText={(text) => this.setState({ password: text })} secureTextEntry />
                         <EvilIcons name="lock" size={32} color="gray" />
                     </View>
                     <View style={styles.forgotPassword}>
@@ -47,12 +79,12 @@ export default class Login extends Component {
                             <Text>Forgot Password</Text>
                         </TouchableOpacity>
                     </View>
-                    <TouchableOpacity style={styles.signInButton}>
+                    <TouchableOpacity style={styles.signInButton} onPress={this.onLogin}>
                         <Text style={{ color: "#fff", fontSize: 16, fontWeight: "bold" }}>Sign In</Text>
                     </TouchableOpacity>
 
                     <Text style={{ textAlign: "center", marginTop: "3%", color: "gray" }}>OR</Text>
-                    <TouchableOpacity style={styles.registerButton}>
+                    <TouchableOpacity style={styles.registerButton} onPress={() => this.props.navigation.navigate('Register')}>
                         <Text style={{ color: "#1b00ff", fontSize: 16, fontWeight: "bold" }}>Register To Create Account</Text>
                     </TouchableOpacity>
                 </View>
@@ -71,7 +103,7 @@ const styles = StyleSheet.create({
     form: {
         width: "90%", alignSelf: "center", position: "relative", backgroundColor: "#fff", borderRadius: 10, height: "55%"
     },
-    textInput: { width: "85%", display: "flex", alignSelf: "center", flexDirection: "row", borderColor: "gray", borderWidth: 0.7, padding: 7, borderRadius: 7, marginTop: "9%", paddingVertical:9 },
+    textInput: { width: "85%", display: "flex", alignSelf: "center", flexDirection: "row", borderColor: "gray", borderWidth: 0.7, padding: 7, borderRadius: 7, marginTop: "9%", paddingVertical: 9 },
     forgotPassword: {
         width: "85%", display: "flex", alignSelf: "center", flexDirection: "row", justifyContent: "space-between", marginTop: "6%"
     },
