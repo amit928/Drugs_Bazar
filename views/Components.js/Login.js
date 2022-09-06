@@ -1,9 +1,12 @@
 import { Image, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { Component } from 'react'
 import { EvilIcons, MaterialCommunityIcons } from '@expo/vector-icons'
-import { BASE_URL } from './Constants';
+import { BASE_URL } from '../Constants'
+import { connect } from 'react-redux'
+import { onLogin } from '../Redux/action'
 
-export default class Login extends Component {
+
+class Login extends Component {
     constructor(props) {
         super(props)
 
@@ -14,31 +17,12 @@ export default class Login extends Component {
         }
     }
     onLogin = () => {
-        const requestOptions = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(
-                {
-                    "userid": this.state.userID,
-                    "password": this.state.password
-                }
-            )
-        };
-        if (this.state.userID !== '' && this.state.password !== ''){
-            fetch(`${BASE_URL}/api/login`, requestOptions)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.Code == '200') {
-                        this.props.navigation.navigate('Home')
-                    }
-                    else
-                        alert(data.msg)
-                })
+        if (this.state.userID.trim() !== '' && this.state.password.trim() !== '') {
+            var body = JSON.stringify({ "userid": this.state.userID, "password": this.state.password })
+            this.props.onLogin(body, this.state.isChecked)
         }
         else {
-            alert("Field Can't Be Blank.")
+            alert("Please fill the input field")
         }
     }
 
@@ -47,10 +31,10 @@ export default class Login extends Component {
             <View style={styles.body}>
                 {/* <StatusBar backgroundColor={'white'} /> */}
                 <View style={styles.header}>
-                    <Image source={require('./Image/logo_db.png')} style={{ width: "70%", height: 40 }} />
+                    <Image source={require('../Image/logo_db.png')} style={{ width: "70%", height: 40 }} />
                 </View>
                 <View style={styles.imageStyle}>
-                    <Image source={require('./Image/login_page_image.png')} style={{ width: "100%", height: "80%" }} />
+                    <Image source={require('../Image/login_page_image.png')} style={{ width: "100%", height: "80%" }} />
                 </View>
                 <View style={styles.form}>
                     <View style={{ width: "60%", alignSelf: "center", marginTop: "7%" }}>
@@ -114,3 +98,16 @@ const styles = StyleSheet.create({
         width: "85%", alignSelf: "center", display: "flex", justifyContent: "center", alignItems: "center", backgroundColor: "#fff", borderColor: "#1b00ff", borderWidth: 0.7, paddingVertical: 12, borderRadius: 10, marginTop: "3%"
     }
 })
+
+export const mapStateToProps = () => {
+    return {
+
+    };
+}
+
+export const mapDispatchToProps = dispatch => {
+    return {
+        onLogin: (body, isChecked) => dispatch(onLogin(body, isChecked))
+    };
+}
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

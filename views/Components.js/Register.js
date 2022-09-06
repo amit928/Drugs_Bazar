@@ -1,7 +1,7 @@
 import { Image, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { Component } from 'react'
 import { EvilIcons, MaterialCommunityIcons, SimpleLineIcons } from '@expo/vector-icons'
-import { BASE_URL } from './Constants'
+import { BASE_URL } from '../Constants'
 
 export default class Register extends Component {
     constructor(props) {
@@ -57,6 +57,7 @@ export default class Register extends Component {
                 })
         }
         else {
+            console.log(this.state)
             alert("Field Can't Be Blank.")
         }
     }
@@ -69,7 +70,7 @@ export default class Register extends Component {
             <View style={styles.body}>
                 {/* <StatusBar backgroundColor={'white'} /> */}
                 <View style={styles.header}>
-                    <Image source={require('./Image/logo_db.png')} style={{ width: "70%", height: 40 }} />
+                    <Image source={require('../Image/logo_db.png')} style={{ width: "70%", height: 40 }} />
                 </View>
                 <ScrollView style={{ position: "relative", top: "5%" }}>
                     <View style={styles.form}>
@@ -123,7 +124,7 @@ export default class Register extends Component {
                             <TextInput placeholder='DL No' placeholderTextColor={"gray"} style={{ width: "80%", marginLeft: "6%" }} onChangeText={(text) => this.setState({ dlNo: text })} />
                         </View>
                         <View style={styles.textInput}>
-                            <TextInput placeholder='GSTN No' placeholderTextColor={"gray"} style={{ width: "80%", marginLeft: "6%" }} onChangeText={(text) => this.setState({ gstnNo: text })} />
+                            <TextInput placeholder='GSTN No' placeholderTextColor={"gray"} style={{ width: "80%", marginLeft: "6%" }} onChangeText={(text) => this.setState({ gstNo: text })} />
                         </View>
                         <View style={styles.textInput}>
                             <TextInput placeholder='Email Id' placeholderTextColor={"gray"} style={{ width: "80%", marginLeft: "6%" }} onChangeText={(text) => this.setState({ emailId: text })} />
