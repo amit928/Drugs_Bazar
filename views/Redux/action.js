@@ -42,10 +42,12 @@ export function onLogin(body, isChecked) {
             .then(response => response.json())
             .then(data => {
                 if (data.Code == '200') {
-                    if(isChecked){
+                    if (isChecked) {
                         _storeData(data.data[0])
                     }
-                    RootNavigation.navigate('Drawer', 'Home')
+                    // RootNavigation.navigate('Drawer', 'Home')
+                    RootNavigation.navigate('Home')
+
                 }
                 else
                     alert(data.msg)
@@ -53,3 +55,25 @@ export function onLogin(body, isChecked) {
     }
 }
 
+
+export function fetchDistributorList() {
+    const requestOptions = {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    };
+    return function (dispatch) {
+        fetch(`${BASE_URL}api/distributorslist`, requestOptions)
+            .then(response => response.json())
+            .then(data => {
+                console.log("data", data)
+
+                // if (data.Code == '200') {
+                //     console.log("data", data)
+                // }
+                // else
+                //     alert(data.msg)
+            })
+    }
+}
