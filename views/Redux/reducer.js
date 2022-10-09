@@ -1,15 +1,29 @@
-import { DASHBOARD, LOGIN_DETAILS, PROFILE_DATA, TASK_LIST, TASK_REPORT } from "./actionType";
+import { DASHBOARD_DETAILS, DISTRIBUTORS_LIST, EXPIRY_PRODUCT_LIST, INVOICE_LIST, LOADING_END, LOADING_START, LOGIN_DETAILS, SHORT_EXPIRY_LIST, } from "./actionType";
 
 const initialState = {
-    dashboardDetails: [],
+    loading: false,
+    dashboardDetails: {},
     loginDetails: {},
-    taskList: [],
+    invoiceList: [],
     profileData: {},
-    taskReportList: []
+    taskReportList: [],
+    shortExpiryList: [],
+    expiryProductList: [],
+    distributorsList: []
 };
 const allInOneReducer = (state = initialState, action) => {
     switch (action.type) {
-        case DASHBOARD:
+        case LOADING_START:
+            return {
+                ...state,
+                loading: true
+            };
+        case LOADING_END:
+            return {
+                ...state,
+                loading: false
+            };
+        case DASHBOARD_DETAILS:
             return {
                 ...state,
                 dashboardDetails: action.payload
@@ -19,20 +33,25 @@ const allInOneReducer = (state = initialState, action) => {
                 ...state,
                 loginDetails: action.payload
             };
-        case TASK_LIST:
+        case INVOICE_LIST:
             return {
                 ...state,
-                taskList: action.payload
+                invoiceList: action.payload
             };
-        case PROFILE_DATA:
+        case SHORT_EXPIRY_LIST:
             return {
                 ...state,
-                profileData: action.payload
+                shortExpiryList: action.payload
             };
-        case TASK_REPORT:
+        case EXPIRY_PRODUCT_LIST:
             return {
                 ...state,
-                taskReportList: action.payload
+                expiryProductList: action.payload
+            };
+        case DISTRIBUTORS_LIST:
+            return {
+                ...state,
+                distributorsList: action.payload
             };
         default:
             return state;

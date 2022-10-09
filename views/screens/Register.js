@@ -1,6 +1,6 @@
 import { Image, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { Component } from 'react'
-import { BASE_URL } from '../Constants';
+import { BASE_URL } from '../library/Constants';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
@@ -59,7 +59,6 @@ export default class Register extends Component {
                 })
         }
         else {
-            console.log(this.state)
             alert("Field Can't Be Blank.")
         }
     }
