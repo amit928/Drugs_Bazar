@@ -1,5 +1,5 @@
 import { BASE_URL, db } from "../library/Constants";
-import { DASHBOARD_DETAILS, DISTRIBUTORS_LIST, EXPIRY_PRODUCT_LIST, INVOICE_LIST, LOADING_END, LOADING_START, SHORT_EXPIRY_LIST } from "./actionType";
+import { DASHBOARD_DETAILS, DISTRIBUTORS_LIST, DISTRIBUTORS_PRODUCT_COUNT, DISTRIBUTORS_PRODUCT_LIST, EXPIRY_PRODUCT_LIST, INVOICE_LIST, LOADING_END, LOADING_START, SHORT_EXPIRY_LIST } from "./actionType";
 import * as RootNavigation from '../navigation/Rootnavigation.js';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
@@ -33,7 +33,7 @@ export function getData() {
             if (value !== null) {
                 // RootNavigation.navigate('Drawer', 'Home')
                 dispatch({ type: DASHBOARD_DETAILS, payload: JSON.parse(value) })
-
+                dispatch(createTable(JSON.parse(value).drgbzrid, 'DistributorProductCount'));
                 dispatch({ type: LOADING_END })
             }
             else {
@@ -45,6 +45,7 @@ export function getData() {
 }
 
 export function createTable(drugsBazarId, type) {
+
     return function (dispatch) {
         NetInfo.fetch().then(state => {
             internetStatus = state.isConnected
@@ -72,6 +73,7 @@ export function createTable(drugsBazarId, type) {
 }
 
 export const setData = (list, type) => {
+    console.log("I am setting data")
 
     return function (dispatch) {
         dispatch({ type: LOADING_START })
@@ -91,6 +93,7 @@ export const setData = (list, type) => {
 }
 
 export const getOfflineData = (type) => {
+    console.log("I am getting data")
     return function (dispatch) {
         dispatch({ type: LOADING_START })
         var list = []
@@ -99,6 +102,7 @@ export const getOfflineData = (type) => {
                 `SELECT * FROM ${nameList(type).tableName}`,
                 [],
                 (tx, results) => {
+                    console.log("results", results)
                     var len = results.rows.length;
                     for (var i = 0; i < len; i++) {
                         list.push(results.rows.item(i))
@@ -243,6 +247,67 @@ export function fetchDistributorList(id, type) {
     }
 }
 
+export function fetchDistributorProductList(id, type) {
+    const requestOptions = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            "dbzrid": id,
+            "dtyp": "2"
+        })
+    };
+    return function (dispatch) {
+        dispatch({ type: LOADING_START })
+        fetch(`${BASE_URL}api/distributorsproductlist`, requestOptions)
+            .then(response => response.json())
+            .then(data => {
+                if (data.Code == '200') {
+                    // dispatch(setData(data.data_value, type))
+                    dispatch({ type: DISTRIBUTORS_PRODUCT_LIST, payload: data.data_value })
+                    dispatch({ type: LOADING_END })
+                }
+                else {
+                    alert(data.msg)
+                    dispatch({ type: LOADING_END })
+                }
+            })
+    }
+}
+
+export function fetchProductCount(id, type) {
+    console.log('I am Here')
+
+    const requestOptions = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            "dbzrid": id,
+            "dtyp": "3"
+        })
+    };
+    return function (dispatch) {
+        dispatch({ type: LOADING_START })
+        fetch(`${BASE_URL}api/productcount`, requestOptions)
+            .then(response => response.json())
+            .then(data => {
+                if (data.Code == '200') {
+                    dispatch(setData(data.data_value, type))
+                    console.log("data", data)
+                    // dispatch({ type: DISTRIBUTORS_PRODUCT_COUNT, payload: data.data_value })
+                    dispatch({ type: LOADING_END })
+                }
+                else {
+                    alert(data.msg)
+                    dispatch({ type: LOADING_END })
+                }
+            })
+    }
+}
+
 export const setDataToRedux = (list, type) => {
     return function (dispatch) {
         dispatch({ type: nameList(type).actionTypeName, payload: list })
@@ -259,6 +324,10 @@ export const nameList = (type, item = {}) => {
             return { "actionTypeName": SHORT_EXPIRY_LIST, 'tableName': 'Short_Expiry', 'tableKeys': '(batch_no, disrt, expmnth, free, invdt, invno, hsncode, mrp, pname, ppack, qty, rate, supplier, town)', 'tableQsMarks': '(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', tableValues: [item.batch_no, item.disrt, item.expmnth, item.free, item.invdt, item.invno, item.hsncode, item.mrp, item.pname, item.ppack, item.qty, item.rate, item.supplier, item.town], tableKeysType: '(ID INTEGER PRIMARY KEY AUTOINCREMENT , batch_no TEXT, disrt INTEGER, expmnth TEXT, free INTEGER, invdt TEXT, invno TEXT, hsncode TEXT, mrp INTEGER, pname TEXT, ppack TEXT, qty INTEGER, rate INTEGER, supplier TEXT, town TEXT);' }
         case 'ExpiryProduct':
             return { "actionTypeName": EXPIRY_PRODUCT_LIST, 'tableName': 'Expiry_Product', 'tableKeys': '(batch_no, disrt, expmnth, free, invdt, invno, hsncode, mrp, pname, ppack, qty, rate, supplier, town)', 'tableQsMarks': '(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', tableValues: [item.batch_no, item.disrt, item.expmnth, item.free, item.invdt, item.invno, item.hsncode, item.mrp, item.pname, item.ppack, item.qty, item.rate, item.supplier, item.town], tableKeysType: '(ID INTEGER PRIMARY KEY AUTOINCREMENT , batch_no TEXT, disrt INTEGER, expmnth TEXT, free INTEGER, invdt TEXT, invno TEXT, hsncode TEXT, mrp INTEGER, pname TEXT, ppack TEXT, qty INTEGER, rate INTEGER, supplier TEXT, town TEXT);' }
+        case 'DistributorProduct':
+            return { "actionTypeName": DISTRIBUTORS_PRODUCT_LIST, 'tableName': 'Distributor_Product_List', 'tableKeys': '(compid, pname, ppack, sysprd)', 'tableQsMarks': '(?, ?, ?, ?)', tableValues: [item.compid, item.pname, item.ppack, item.sysprd], tableKeysType: '(ID INTEGER PRIMARY KEY AUTOINCREMENT , compid INTEGER, pname TEXT, ppack TEXT, sysprd TEXT);' }
+        case 'DistributorProductCount':
+            return { "actionTypeName": DISTRIBUTORS_PRODUCT_COUNT, 'tableName': 'Distributor_Product_Count', 'tableKeys': '(PCOUNT)', 'tableQsMarks': '(?)', tableValues: [item.PCOUNT], tableKeysType: '(ID INTEGER PRIMARY KEY AUTOINCREMENT , PCOUNT INTEGER);' }
         default:
             break;
     }
@@ -278,6 +347,12 @@ export function fetchDataList(drugsBazarId, type) {
                 break;
             case 'ExpiryProduct':
                 dispatch(fetchExpiryProduct(drugsBazarId, type))
+                break;
+            case 'DistributorProduct':
+                dispatch(fetchDistributorProductList(drugsBazarId, type))
+                break;
+            case 'DistributorProductCount':
+                dispatch(fetchProductCount(drugsBazarId, type))
                 break;
             default:
                 break;

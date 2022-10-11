@@ -16,6 +16,7 @@ import ShortExpiry from './views/screens/ShortExpiry';
 import ExpiryProduct from './views/screens/ExpiryProduct';
 import DistributorList from './views/screens/DistributorList';
 import Loader from './views/common/Loader';
+import DistributorProduct from './views/screens/DistributorProduct';
 
 const Stack = createNativeStackNavigator();
 const store = configureStore()
@@ -37,6 +38,7 @@ export default function App() {
           <Stack.Screen name="ShortExpiry" component={ShortExpiry} options={{ headerShown: false }} />
           <Stack.Screen name="ExpiryProduct" component={ExpiryProduct} options={{ headerShown: false }} />
           <Stack.Screen name="DistributorList" component={DistributorList} options={{ headerShown: false }} />
+          <Stack.Screen name="DistributorProduct" component={DistributorProduct} options={{ headerShown: false }} />
 
           {/* <Stack.Screen name="Drawer" component={MyDrawer} options={{ headerShown: false }} /> */}
 

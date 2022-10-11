@@ -35,7 +35,7 @@ const Purchase = [
 ]
 
 const Others = [
-  { icon: <FontAwesome name='briefcase' color={'#292c45'} size={20} />, text: "My Product", navigation: "Home" },
+  { icon: <FontAwesome name='briefcase' color={'#292c45'} size={20} />, text: "My Product", navigation: "DistributorProduct" },
   { icon: <MaterialIcons name='open-in-new' color={'#292c45'} size={20} />, text: "New Product", navigation: "Home" },
   { icon: <MaterialCommunityIcons name='download-box-outline' color={'#292c45'} size={20} />, text: "A/c statement", navigation: "Home" },
 ]
@@ -78,9 +78,7 @@ class Home extends Component {
   };
 
   componentDidUpdate = (prevProps, prevState) => {
-    if (prevProps.distributorsList.length !== this.props.distributorsList.length) {
-      this.props.getData();
-    }
+
   }
 
   onBackPress = () => {
@@ -94,6 +92,7 @@ class Home extends Component {
 
 
   render() {
+    console.log(this.props.distributorsProductCount)
     return (
       <View>
         <Header />
@@ -139,7 +138,7 @@ class Home extends Component {
                 <Fontisto name='shopify' size={23} color="red" />
               </View>
               <View style={{ height: "65%", display: "flex", justifyContent: "center", alignItems: "center" }}>
-                <Text style={{ fontSize: 25, fontWeight: "bold" }}>70</Text>
+                <Text style={{ fontSize: 25, fontWeight: "bold" }}>{this.props.distributorsProductCount[0] && this.props.distributorsProductCount [0].PCOUNT}</Text>
                 <Text>Total Products</Text>
               </View>
             </View>
@@ -177,7 +176,10 @@ class Home extends Component {
                 Purchase.length > 0 && Purchase.map((item, index) => {
                   return (
                     <View key={index} style={{ width: "25%", paddingVertical: 8 }}>
-                      <TouchableOpacity style={styles.icons} onPress={() => { this.props.createTable(this.props.dashboardDetails.drgbzrid, item.navigation); this.props.navigation.navigate(item.navigation); }}>
+                      <TouchableOpacity style={styles.icons} onPress={() => {
+                        this.props.createTable(this.props.dashboardDetails.drgbzrid, item.navigation);
+                        this.props.navigation.navigate(item.navigation)
+                      }}>
                         {item.icon}
                       </TouchableOpacity>
                       <Text style={{ fontSize: 10, textAlign: "center", marginTop: 3 }}>{item.text}</Text>
@@ -216,7 +218,10 @@ class Home extends Component {
                 Others.length > 0 && Others.map((item, index) => {
                   return (
                     <View key={index} style={{ width: "25%", paddingVertical: 8 }}>
-                      <TouchableOpacity style={styles.icons}>
+                      <TouchableOpacity style={styles.icons} onPress={() => {
+                        this.props.createTable(this.props.dashboardDetails.drgbzrid, item.navigation);
+                        this.props.navigation.navigate(item.navigation)
+                      }}>
                         {item.icon}
                       </TouchableOpacity>
                       <Text style={{ fontSize: 10, textAlign: "center", marginTop: 3 }}>{item.text}</Text>
@@ -247,6 +252,7 @@ export const mapStateToProps = (store) => {
   return {
     dashboardDetails: store.allInOneReducer.dashboardDetails,
     distributorsList: store.allInOneReducer.distributorsList,
+    distributorsProductCount: store.allInOneReducer.distributorsProductCount,
   };
 };
 
