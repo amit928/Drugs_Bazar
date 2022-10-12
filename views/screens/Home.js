@@ -28,14 +28,14 @@ const Purchase = [
   { icon: <MaterialCommunityIcons name='cart-outline' color={'#292c45'} size={20} />, text: "Purchase Order", navigation: "DistributorList" },
   { icon: <FontAwesome name='rupee' color={'#292c45'} size={20} />, text: "A/c Statement", navigation: "Home" },
   { icon: <FontAwesome5 name='file-invoice' color={'#292c45'} size={20} />, text: "Invoice", navigation: "Invoice" },
-  { icon: <MaterialCommunityIcons name='database-search' color={'#292c45'} size={20} />, text: "Product Search", navigation: "Home" },
+  { icon: <MaterialCommunityIcons name='database-search' color={'#292c45'} size={20} />, text: "Product Search", navigation: "DistributorProduct" },
   { icon: <MaterialCommunityIcons name='file-export' color={'#292c45'} size={20} />, text: "Short Expiry", navigation: "ShortExpiry" },
   { icon: <Foundation name='page-delete' color={'#292c45'} size={20} />, text: "Expiry", navigation: "ExpiryProduct" },
   { icon: <MaterialCommunityIcons name='truck-delivery' color={'#292c45'} size={20} />, text: "Purchase Return", navigation: "Home" },
 ]
 
 const Others = [
-  { icon: <FontAwesome name='briefcase' color={'#292c45'} size={20} />, text: "My Product", navigation: "DistributorProduct" },
+  { icon: <FontAwesome name='briefcase' color={'#292c45'} size={20} />, text: "My Product", navigation: "Home" },
   { icon: <MaterialIcons name='open-in-new' color={'#292c45'} size={20} />, text: "New Product", navigation: "Home" },
   { icon: <MaterialCommunityIcons name='download-box-outline' color={'#292c45'} size={20} />, text: "A/c statement", navigation: "Home" },
 ]
@@ -92,7 +92,6 @@ class Home extends Component {
 
 
   render() {
-    console.log(this.props.distributorsProductCount)
     return (
       <View>
         <Header />

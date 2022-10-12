@@ -73,21 +73,19 @@ export function createTable(drugsBazarId, type) {
 }
 
 export const setData = (list, type) => {
-    console.log("I am setting data")
-
     return function (dispatch) {
         dispatch({ type: LOADING_START })
         db.transaction(async (tx) => {
-            list.length > 0 && list.map(async (item, index) => {
+            await list.length > 0 && list.map(async (item, index) => {
                 await tx.executeSql(
                     `INSERT INTO ${nameList(type).tableName} ${nameList(type).tableKeys} VALUES ${nameList(type).tableQsMarks}`,
                     nameList(type, item).tableValues
                 )
             })
+            dispatch(getOfflineData(type))
+            dispatch({ type: LOADING_END })
         });
-        dispatch({ type: LOADING_END })
 
-        dispatch(getOfflineData(type))
     }
 
 }
@@ -98,20 +96,37 @@ export const getOfflineData = (type) => {
         dispatch({ type: LOADING_START })
         var list = []
         db.transaction((tx) => {
-            tx.executeSql(
-                `SELECT * FROM ${nameList(type).tableName}`,
-                [],
-                (tx, results) => {
-                    console.log("results", results)
-                    var len = results.rows.length;
-                    for (var i = 0; i < len; i++) {
-                        list.push(results.rows.item(i))
-                    }
+            if (type == 'DistributorProduct') {
+                tx.executeSql(
+                    `SELECT compid, pname, ppack, sysprd FROM ${nameList(type).tableName} WHERE compid = 21;`,
+                    [],
+                    (tx, results) => {
+                        var len = results.rows.length;
+                        for (var i = 0; i < len; i++) {
+                            list.push(results.rows.item(i))
+                        }
 
-                    dispatch(setDataToRedux(list, type))
-                    dispatch({ type: LOADING_END })
-                }
-            )
+                        dispatch(setDataToRedux(list, type))
+                        dispatch({ type: LOADING_END })
+                    }
+                )
+            }
+            else {
+                tx.executeSql(
+                    `SELECT * FROM ${nameList(type).tableName}`,
+                    [],
+                    (tx, results) => {
+                        var len = results.rows.length;
+                        for (var i = 0; i < len; i++) {
+                            list.push(results.rows.item(i))
+                        }
+
+                        dispatch(setDataToRedux(list, type))
+                        dispatch({ type: LOADING_END })
+                    }
+                )
+            }
+
         })
     }
 }
@@ -264,8 +279,7 @@ export function fetchDistributorProductList(id, type) {
             .then(response => response.json())
             .then(data => {
                 if (data.Code == '200') {
-                    // dispatch(setData(data.data_value, type))
-                    dispatch({ type: DISTRIBUTORS_PRODUCT_LIST, payload: data.data_value })
+                    dispatch(setData(data.data_value, type))
                     dispatch({ type: LOADING_END })
                 }
                 else {
@@ -277,8 +291,6 @@ export function fetchDistributorProductList(id, type) {
 }
 
 export function fetchProductCount(id, type) {
-    console.log('I am Here')
-
     const requestOptions = {
         method: 'POST',
         headers: {
@@ -296,8 +308,7 @@ export function fetchProductCount(id, type) {
             .then(data => {
                 if (data.Code == '200') {
                     dispatch(setData(data.data_value, type))
-                    console.log("data", data)
-                    // dispatch({ type: DISTRIBUTORS_PRODUCT_COUNT, payload: data.data_value })
+                    dispatch({ type: DISTRIBUTORS_PRODUCT_COUNT, payload: data.data_value })
                     dispatch({ type: LOADING_END })
                 }
                 else {
@@ -325,7 +336,7 @@ export const nameList = (type, item = {}) => {
         case 'ExpiryProduct':
             return { "actionTypeName": EXPIRY_PRODUCT_LIST, 'tableName': 'Expiry_Product', 'tableKeys': '(batch_no, disrt, expmnth, free, invdt, invno, hsncode, mrp, pname, ppack, qty, rate, supplier, town)', 'tableQsMarks': '(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', tableValues: [item.batch_no, item.disrt, item.expmnth, item.free, item.invdt, item.invno, item.hsncode, item.mrp, item.pname, item.ppack, item.qty, item.rate, item.supplier, item.town], tableKeysType: '(ID INTEGER PRIMARY KEY AUTOINCREMENT , batch_no TEXT, disrt INTEGER, expmnth TEXT, free INTEGER, invdt TEXT, invno TEXT, hsncode TEXT, mrp INTEGER, pname TEXT, ppack TEXT, qty INTEGER, rate INTEGER, supplier TEXT, town TEXT);' }
         case 'DistributorProduct':
-            return { "actionTypeName": DISTRIBUTORS_PRODUCT_LIST, 'tableName': 'Distributor_Product_List', 'tableKeys': '(compid, pname, ppack, sysprd)', 'tableQsMarks': '(?, ?, ?, ?)', tableValues: [item.compid, item.pname, item.ppack, item.sysprd], tableKeysType: '(ID INTEGER PRIMARY KEY AUTOINCREMENT , compid INTEGER, pname TEXT, ppack TEXT, sysprd TEXT);' }
+            return { "actionTypeName": DISTRIBUTORS_PRODUCT_LIST, 'tableName': 'Distributor_Product_List_Search', 'tableKeys': '(compid, pname, ppack, sysprd)', 'tableQsMarks': '(?, ?, ?, ?)', tableValues: [item.compid, item.pname, item.ppack, item.sysprd], tableKeysType: '(ID INTEGER PRIMARY KEY AUTOINCREMENT , compid INTEGER, pname TEXT, ppack TEXT, sysprd TEXT);' }
         case 'DistributorProductCount':
             return { "actionTypeName": DISTRIBUTORS_PRODUCT_COUNT, 'tableName': 'Distributor_Product_Count', 'tableKeys': '(PCOUNT)', 'tableQsMarks': '(?)', tableValues: [item.PCOUNT], tableKeysType: '(ID INTEGER PRIMARY KEY AUTOINCREMENT , PCOUNT INTEGER);' }
         default:

@@ -107,7 +107,7 @@ class DistributorProduct extends Component {
                         </View>
 
 
-                        {this.props.distributorsProductList && this.props.distributorsProductList.length > 0 &&
+                        {/* {this.props.distributorsProductList && this.props.distributorsProductList.length > 0 &&
                             <View style={styles.tableBody}>
                                 <ScrollView horizontal={true}  >
                                     <View style={{ borderRadius: 5 }}>
@@ -149,7 +149,7 @@ class DistributorProduct extends Component {
                                         </View>
                                     </View>
                                 </ScrollView>
-                            </View>}
+                            </View>} */}
                     </View>
                 </ScrollView>
             </View>
