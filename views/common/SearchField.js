@@ -8,7 +8,7 @@ export default class SearchField extends Component {
       <View>
         <View style={{ ...styles.searchField, marginBottom: 10 }}>
         <Ionicons name='search' size={17} style={{ marginLeft: 10, marginRight:5, color:"#8c80ff" }}></Ionicons>
-          <TextInput placeholder='Search' placeholderTextColor={"gray"} style={{ width: "85%", fontSize: 14 }} onChangeText={(text) => console.log(text)} />
+          <TextInput placeholder='Search' placeholderTextColor={"gray"} style={{ width: "85%", fontSize: 14 }} onChangeText={(text) => this.props.onSearch(text)} />
         </View>
       </View>
     )

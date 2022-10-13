@@ -9,6 +9,7 @@ import { connect } from 'react-redux';
 import { SCREEN } from '../library/Constants';
 import DatePickerModal from '../common/DatePickerModal';
 import SearchField from '../common/SearchField';
+import { getOfflineData } from '../Redux/action';
 
 const tableData = [
     { headerName: "ID", width: 90 },
@@ -91,9 +92,10 @@ class DistributorProduct extends Component {
                             <View style={styles.searchBottomRow}>
                                 {/* <TouchableOpacity style={styles.searchBottom}>
                                     <Text style={{ color: "#1b00ff" }}>Search</Text>
+                                    this.props.getOfflineData(item.navigation)
                                 </TouchableOpacity> */}
                                 <View style={{ width: "72%" }}>
-                                    <SearchField />
+                                    <SearchField onSearch={(data)=>this.props.getOfflineData('DistributorProduct', data)} />
                                 </View>
 
                                 <TouchableOpacity style={{ ...styles.searchIconField, borderColor: "#006600", }}>
@@ -180,6 +182,8 @@ export const mapStateToProps = (store) => {
 
 export const mapDispatchToProps = (dispatch) => {
     return {
+    getOfflineData: (type, search) => dispatch(getOfflineData(type, search))
+
     }
 }
 

@@ -52,7 +52,7 @@ export function createTable(drugsBazarId, type) {
             if (state.isConnected == true) {
                 dispatch({ type: LOADING_START })
                 db.transaction((tx) => {
-                    tx.executeSql(`DROP TABLE ${nameList(type).tableName}`)
+                    // tx.executeSql(`DROP TABLE ${nameList(type).tableName}`)
                     tx.executeSql(
                         "CREATE TABLE IF NOT EXISTS "
                         + `${nameList(type).tableName} `
@@ -73,6 +73,8 @@ export function createTable(drugsBazarId, type) {
 }
 
 export const setData = (list, type) => {
+    console.log("setting data", type)
+
     return function (dispatch) {
         dispatch({ type: LOADING_START })
         db.transaction(async (tx) => {
@@ -82,7 +84,7 @@ export const setData = (list, type) => {
                     nameList(type, item).tableValues
                 )
             })
-            dispatch(getOfflineData(type))
+            // dispatch(getOfflineData(type))
             dispatch({ type: LOADING_END })
         });
 
@@ -90,22 +92,23 @@ export const setData = (list, type) => {
 
 }
 
-export const getOfflineData = (type) => {
-    console.log("I am getting data")
+export const getOfflineData = (type, search = '10LI 20 TAB') => {
+
+    console.log("I am getting data", type)
     return function (dispatch) {
         dispatch({ type: LOADING_START })
         var list = []
         db.transaction((tx) => {
             if (type == 'DistributorProduct') {
                 tx.executeSql(
-                    `SELECT compid, pname, ppack, sysprd FROM ${nameList(type).tableName} WHERE compid = 21;`,
+                    `SELECT compid, pname, ppack, sysprd FROM ${nameList(type).tableName} WHERE pname = ${search}`,
                     [],
                     (tx, results) => {
                         var len = results.rows.length;
                         for (var i = 0; i < len; i++) {
                             list.push(results.rows.item(i))
                         }
-
+                        console.log("results", results)
                         dispatch(setDataToRedux(list, type))
                         dispatch({ type: LOADING_END })
                     }

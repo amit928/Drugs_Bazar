@@ -39,7 +39,7 @@ export default function App() {
           <Stack.Screen name="ShortExpiry" component={ShortExpiry} options={{ headerShown: false }} />
           <Stack.Screen name="ExpiryProduct" component={ExpiryProduct} options={{ headerShown: false }} />
           <Stack.Screen name="DistributorList" component={DistributorList} options={{ headerShown: false }} />
-          <Stack.Screen name="DistributorProductSearch" component={DistributorProduct} options={{ headerShown: false }} />
+          <Stack.Screen name="DistributorProduct" component={DistributorProduct} options={{ headerShown: false }} />
           <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
 
           {/* <Stack.Screen name="Drawer" component={MyDrawer} options={{ headerShown: false }} /> */}

@@ -9,7 +9,7 @@ import Foundation from 'react-native-vector-icons/Foundation';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { connect } from 'react-redux';
-import { createTable, getData } from '../Redux/action';
+import { createTable, getData, getOfflineData } from '../Redux/action';
 import Header from '../common/Header';
 import NetInfo from "@react-native-community/netinfo";
 import { formatDateTime } from '../library/Constants';
@@ -176,7 +176,9 @@ class Home extends Component {
                   return (
                     <View key={index} style={{ width: "25%", paddingVertical: 8 }}>
                       <TouchableOpacity style={styles.icons} onPress={() => {
-                        this.props.createTable(this.props.dashboardDetails.drgbzrid, item.navigation);
+                        if(item.navigation !== 'DistributorProduct'){  
+                          this.props.createTable(this.props.dashboardDetails.drgbzrid, item.navigation);
+                        }
                         this.props.navigation.navigate(item.navigation)
                       }}>
                         {item.icon}
@@ -258,7 +260,7 @@ export const mapStateToProps = (store) => {
 export const mapDispatchToProps = (dispatch) => {
   return {
     getData: () => dispatch(getData()),
-    createTable: (id, type) => dispatch(createTable(id, type))
+    createTable: (id, type) => dispatch(createTable(id, type)),
   };
 };
 
