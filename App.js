@@ -18,6 +18,7 @@ import DistributorList from './views/screens/DistributorList';
 import Loader from './views/common/Loader';
 import DistributorProduct from './views/screens/DistributorProduct';
 import Profile from './views/screens/Profile';
+import SalesInvoice from './views/screens/SalesInvoice';
 
 const Stack = createNativeStackNavigator();
 const store = configureStore()
@@ -41,6 +42,7 @@ export default function App() {
           <Stack.Screen name="DistributorList" component={DistributorList} options={{ headerShown: false }} />
           <Stack.Screen name="DistributorProduct" component={DistributorProduct} options={{ headerShown: false }} />
           <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
+          <Stack.Screen name="SalesInvoice" component={SalesInvoice} options={{ headerShown: false }} />
 
           {/* <Stack.Screen name="Drawer" component={MyDrawer} options={{ headerShown: false }} /> */}
 
@@ -52,11 +54,11 @@ export default function App() {
 
 // export function MyDrawer(props) {
 //   return (
-//       <Drawer.Navigator useLegacyImplementation initialRouteName="Home" 
-//       // drawerContent={() => <Sidebar {...props} />} 
-//       screenOptions={{headerShown: false}}
-//       >
-//         <Drawer.Screen name="Home" component={Home}  />
-//       </Drawer.Navigator>
+//     <Drawer.Navigator useLegacyImplementation initialRouteName="Home"
+//       // drawerContent={() => <Sidebar {...props} />}
+//       screenOptions={{ headerShown: false }}
+//     >
+//       <Drawer.Screen name="Home" component={Home} />
+//     </Drawer.Navigator>
 //   );
 // }

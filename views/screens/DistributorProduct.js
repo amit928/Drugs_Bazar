@@ -43,7 +43,6 @@ class DistributorProduct extends Component {
 
 
     render() {
-        console.log(this.props.distributorsProductList.length)
         return (
             <View>
                 <Header />

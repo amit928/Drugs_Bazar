@@ -19,7 +19,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const dashboardImage = require('../Image/dashboardImage.png')
 
 const Transactions = [
-  { icon: <Foundation name='page-export-doc' color={'#292c45'} size={20} />, text: "Sale Invoices", navigation: "Home" },
+  { icon: <Foundation name='page-export-doc' color={'#292c45'} size={20} />, text: "Sales Invoice", navigation: "SalesInvoice" },
   { icon: <FontAwesome name='rupee' color={'#292c45'} size={20} />, text: "Collection", navigation: "Home" },
   { icon: <MaterialCommunityIcons name='cart-arrow-up' color={'#292c45'} size={20} />, text: "Busineww Request Promotion", navigation: "Home" },
 ]
@@ -137,7 +137,7 @@ class Home extends Component {
                 <Fontisto name='shopify' size={23} color="red" />
               </View>
               <View style={{ height: "65%", display: "flex", justifyContent: "center", alignItems: "center" }}>
-                <Text style={{ fontSize: 25, fontWeight: "bold" }}>{this.props.distributorsProductCount[0] && this.props.distributorsProductCount [0].PCOUNT}</Text>
+                <Text style={{ fontSize: 25, fontWeight: "bold" }}>{this.props.distributorsProductCount[0] && this.props.distributorsProductCount[0].PCOUNT}</Text>
                 <Text>Total Products</Text>
               </View>
             </View>
@@ -176,7 +176,7 @@ class Home extends Component {
                   return (
                     <View key={index} style={{ width: "25%", paddingVertical: 8 }}>
                       <TouchableOpacity style={styles.icons} onPress={() => {
-                        if(item.navigation !== 'DistributorProduct'){  
+                        if (item.navigation !== 'DistributorProduct') {
                           this.props.createTable(this.props.dashboardDetails.drgbzrid, item.navigation);
                         }
                         this.props.navigation.navigate(item.navigation)
@@ -200,7 +200,7 @@ class Home extends Component {
                 Transactions.length > 0 && Transactions.map((item, index) => {
                   return (
                     <View key={index} style={{ width: "25%", paddingVertical: 8 }}>
-                      <TouchableOpacity style={styles.icons}>
+                      <TouchableOpacity style={styles.icons} onPress={() => this.props.navigation.navigate(item.navigation)}>
                         {item.icon}
                       </TouchableOpacity>
                       <Text style={{ fontSize: 10, textAlign: "center", marginTop: 3 }}>{item.text}</Text>
