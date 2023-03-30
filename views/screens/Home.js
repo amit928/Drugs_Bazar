@@ -9,7 +9,7 @@ import Foundation from 'react-native-vector-icons/Foundation';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { connect } from 'react-redux';
-import { createTable, getData, getOfflineData } from '../Redux/action';
+import { createTable, getData, } from '../Redux/action';
 import Header from '../common/Header';
 import NetInfo from "@react-native-community/netinfo";
 import { formatDateTime } from '../library/Constants';

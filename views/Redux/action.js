@@ -1,5 +1,5 @@
 import { BASE_URL, db } from "../library/Constants";
-import { DASHBOARD_DETAILS, DISTRIBUTORS_LIST, DISTRIBUTORS_PRODUCT_COUNT, DISTRIBUTORS_PRODUCT_LIST, EXPIRY_PRODUCT_LIST, INVOICE_LIST, LOADING_END, LOADING_START, SHORT_EXPIRY_LIST } from "./actionType";
+import { DASHBOARD_DETAILS, DISTRIBUTORS_LIST, DISTRIBUTORS_PRODUCT_COUNT, DISTRIBUTORS_PRODUCT_LIST, EXPIRY_PRODUCT_LIST, INVOICE_LIST, LOADING_END, LOADING_START, SALES_INVOICE_COUNT, SHORT_EXPIRY_LIST } from "./actionType";
 import * as RootNavigation from '../navigation/Rootnavigation.js';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
@@ -73,8 +73,6 @@ export function createTable(drugsBazarId, type) {
 }
 
 export const setData = (list, type) => {
-    console.log("setting data", type)
-
     return function (dispatch) {
         dispatch({ type: LOADING_START })
         db.transaction(async (tx) => {
@@ -84,7 +82,9 @@ export const setData = (list, type) => {
                     nameList(type, item).tableValues
                 )
             })
-            // dispatch(getOfflineData(type))
+            if (type == 'SalesInvoiceTable') {
+                dispatch(getOfflineData(type))
+            }
             dispatch({ type: LOADING_END })
         });
 
@@ -93,8 +93,6 @@ export const setData = (list, type) => {
 }
 
 export const getOfflineData = (type, search = '10LI 20 TAB') => {
-
-    console.log("I am getting data", type)
     return function (dispatch) {
         dispatch({ type: LOADING_START })
         var list = []
@@ -108,13 +106,13 @@ export const getOfflineData = (type, search = '10LI 20 TAB') => {
                         for (var i = 0; i < len; i++) {
                             list.push(results.rows.item(i))
                         }
-                        console.log("results", results)
                         dispatch(setDataToRedux(list, type))
-                        dispatch({ type: LOADING_END })
                     }
                 )
+                dispatch({ type: LOADING_END })
             }
             else {
+                // console.log("I am calling")
                 tx.executeSql(
                     `SELECT * FROM ${nameList(type).tableName}`,
                     [],
@@ -123,11 +121,10 @@ export const getOfflineData = (type, search = '10LI 20 TAB') => {
                         for (var i = 0; i < len; i++) {
                             list.push(results.rows.item(i))
                         }
-
                         dispatch(setDataToRedux(list, type))
-                        dispatch({ type: LOADING_END })
                     }
                 )
+                dispatch({ type: LOADING_END })
             }
 
         })
@@ -342,6 +339,9 @@ export const nameList = (type, item = {}) => {
             return { "actionTypeName": DISTRIBUTORS_PRODUCT_LIST, 'tableName': 'Distributor_Product_List_Search', 'tableKeys': '(compid, pname, ppack, sysprd)', 'tableQsMarks': '(?, ?, ?, ?)', tableValues: [item.compid, item.pname, item.ppack, item.sysprd], tableKeysType: '(ID INTEGER PRIMARY KEY AUTOINCREMENT , compid INTEGER, pname TEXT, ppack TEXT, sysprd TEXT);' }
         case 'DistributorProductCount':
             return { "actionTypeName": DISTRIBUTORS_PRODUCT_COUNT, 'tableName': 'Distributor_Product_Count', 'tableKeys': '(PCOUNT)', 'tableQsMarks': '(?)', tableValues: [item.PCOUNT], tableKeysType: '(ID INTEGER PRIMARY KEY AUTOINCREMENT , PCOUNT INTEGER);' }
+
+        case 'SalesInvoiceTable':
+            return { "actionTypeName": SALES_INVOICE_COUNT, 'tableName': 'Sales_Invoice_Count', 'tableKeys': '(chalan_no, date, mobile_no, quantity, selected_product, selected_batch)', 'tableQsMarks': '(?, ?, ?, ?,?, ?)', tableValues: [item.chalan_no, item.date, item.mobile_no, item.quantity, item.selectedProduct, item.selectedBatch], tableKeysType: '(ID INTEGER PRIMARY KEY AUTOINCREMENT, chalan_no TEXT, date TEXT, mobile_no TEXT, quantity TEXT, selected_product TEXT, selected_batch TEXT  );' }
         default:
             break;
     }
@@ -371,6 +371,26 @@ export function fetchDataList(drugsBazarId, type) {
             default:
                 break;
         }
+    }
+}
+
+export const tableCreation = (type) => {
+    db.transaction((tx) => {
+        // tx.executeSql(`DROP TABLE ${nameList(type).tableName}`)
+        tx.executeSql(
+            "CREATE TABLE IF NOT EXISTS "
+            + `${nameList(type).tableName} `
+            + nameList(type).tableKeysType
+        )
+    })
+}
+
+export const addSalesInvoiceData = (data, type) => {
+    // console.log(data, type)
+    return function (dispatch) {
+        dispatch({ type: LOADING_START })
+        dispatch(setData(data, type))
+        dispatch({ type: LOADING_END })
     }
 }
 

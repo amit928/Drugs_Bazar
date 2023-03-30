@@ -17,8 +17,8 @@ const tableData = [
     { headerName: "Company Town", width: 100 },
     { headerName: "Invoice Amount", width: 90 },
     { headerName: "Action", width: 80 }
-
 ]
+
 class Invoice extends Component {
     constructor(props) {
         super(props)
