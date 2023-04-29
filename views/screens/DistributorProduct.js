@@ -30,6 +30,7 @@ class DistributorProduct extends Component {
 
     componentDidMount = () => {
         BackHandler.addEventListener('hardwareBackPress', this.onBackPress);
+        this.props.getOfflineData('DistributorProduct', '')
     }
 
     onBackPress = () => {
@@ -43,14 +44,12 @@ class DistributorProduct extends Component {
 
 
     render() {
+        // console.log("this.props.distributorsProductList", this.props.distributorsProductList)
         return (
             <View>
-                <Header />
+                <Header icon={'back'} header={'Distributors Product List'} />
                 <ScrollView>
                     <View style={styles.table}>
-                        <View>
-                            <Text style={styles.headerText}>Distributors Product List</Text>
-                        </View>
                         <View style={styles.searchBox}>
                             <View style={{ flexDirection: 'row', justifyContent: 'center', display: "flex", marginHorizontal: 10 }}>
                                 <View style={{ width: SCREEN.WIDTH / 2.3, padding: 5 }}>
@@ -94,7 +93,7 @@ class DistributorProduct extends Component {
                                     this.props.getOfflineData(item.navigation)
                                 </TouchableOpacity> */}
                                 <View style={{ width: "72%" }}>
-                                    <SearchField onSearch={(data)=>this.props.getOfflineData('DistributorProduct', data)} />
+                                    <SearchField onSearch={(data) => this.props.getOfflineData('DistributorProduct', data)} />
                                 </View>
 
                                 <TouchableOpacity style={{ ...styles.searchIconField, borderColor: "#006600", }}>
@@ -181,7 +180,7 @@ export const mapStateToProps = (store) => {
 
 export const mapDispatchToProps = (dispatch) => {
     return {
-    getOfflineData: (type, search) => dispatch(getOfflineData(type, search))
+        getOfflineData: (type, search) => dispatch(getOfflineData(type, search))
 
     }
 }

@@ -44,6 +44,14 @@ export function getData() {
     }
 }
 
+export const deleteTable = (type) => {
+    return function (dispatch) {
+        db.transaction((tx) => {
+            tx.executeSql(`DROP TABLE ${nameList(type).tableName}`)
+        })
+    }
+}
+
 export function createTable(drugsBazarId, type) {
 
     return function (dispatch) {
@@ -52,13 +60,14 @@ export function createTable(drugsBazarId, type) {
             if (state.isConnected == true) {
                 dispatch({ type: LOADING_START })
                 db.transaction((tx) => {
-                    // tx.executeSql(`DROP TABLE ${nameList(type).tableName}`)
+                    tx.executeSql(`DROP TABLE ${nameList(type).tableName}`)
                     tx.executeSql(
                         "CREATE TABLE IF NOT EXISTS "
                         + `${nameList(type).tableName} `
                         + nameList(type).tableKeysType
                     )
                 })
+                // console.log("type", type)
                 dispatch(fetchDataList(drugsBazarId, type))
                 dispatch({ type: LOADING_END })
 
@@ -92,27 +101,43 @@ export const setData = (list, type) => {
 
 }
 
-export const getOfflineData = (type, search = '10LI 20 TAB') => {
+export const getOfflineData = (type, search = '') => {
     return function (dispatch) {
         dispatch({ type: LOADING_START })
         var list = []
         db.transaction((tx) => {
-            if (type == 'DistributorProduct') {
+            // if (type == 'DistributorProduct') {
+            //     tx.executeSql(
+            //         `SELECT compid, pname, ppack, sysprd FROM ${nameList(type).tableName} WHERE pname = ${search}`,
+            //         [],
+            //         (tx, results) => {
+            //             var len = results.rows.length;
+            //             for (var i = 0; i < len; i++) {
+            //                 list.push(results.rows.item(i))
+            //             }
+            //             dispatch(setDataToRedux(list, type))
+            //         }
+            //     )
+            //     dispatch({ type: LOADING_END })
+            // }
+            // else {
+            if (search !== '') {
                 tx.executeSql(
-                    `SELECT compid, pname, ppack, sysprd FROM ${nameList(type).tableName} WHERE pname = ${search}`,
+                    `SELECT * FROM ${nameList(type).tableName} WHERE COMPID = ${search}`,
                     [],
                     (tx, results) => {
+                        console.log("results", results)
                         var len = results.rows.length;
                         for (var i = 0; i < len; i++) {
                             list.push(results.rows.item(i))
                         }
                         dispatch(setDataToRedux(list, type))
+                        dispatch({ type: LOADING_END })
                     }
                 )
-                dispatch({ type: LOADING_END })
+
             }
             else {
-                // console.log("I am calling")
                 tx.executeSql(
                     `SELECT * FROM ${nameList(type).tableName}`,
                     [],
@@ -122,10 +147,12 @@ export const getOfflineData = (type, search = '10LI 20 TAB') => {
                             list.push(results.rows.item(i))
                         }
                         dispatch(setDataToRedux(list, type))
+                        dispatch({ type: LOADING_END })
                     }
                 )
-                dispatch({ type: LOADING_END })
             }
+
+            // }
 
         })
     }
@@ -251,7 +278,7 @@ export function fetchDistributorList(id, type) {
             .then(data => {
                 if (data.Code == '200') {
                     dispatch(setData(data.data_value, type))
-                    dispatch({ type: DISTRIBUTORS_LIST, payload: data.data_value })
+                    // dispatch({ type: DISTRIBUTORS_LIST, payload: data.data_value })
                     dispatch({ type: LOADING_END })
                 }
                 else {
@@ -279,7 +306,7 @@ export function fetchDistributorProductList(id, type) {
             .then(response => response.json())
             .then(data => {
                 if (data.Code == '200') {
-                    dispatch(setData(data.data_value, type))
+                    // dispatch(setData(data.data_value, type))
                     dispatch({ type: LOADING_END })
                 }
                 else {

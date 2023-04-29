@@ -9,6 +9,7 @@ import { connect } from 'react-redux';
 import { SCREEN } from '../library/Constants';
 import DatePickerModal from '../common/DatePickerModal';
 import SearchField from '../common/SearchField';
+import { getOfflineData } from '../Redux/action';
 
 const tableData = [
     { headerName: "ID", width: 90 },
@@ -29,6 +30,7 @@ class DistributorList extends Component {
 
     componentDidMount = () => {
         BackHandler.addEventListener('hardwareBackPress', this.onBackPress);
+        this.props.getOfflineData('DistributorList');
     }
 
     onBackPress = () => {
@@ -42,67 +44,19 @@ class DistributorList extends Component {
 
 
     render() {
+        console.log("this.props.distributorsList", this.props.distributorsList.length)
         return (
             <View>
-                <Header />
+                <Header icon={'back'} header={'Distributors List'} />
                 <ScrollView>
                     <View style={styles.table}>
-                        <View>
-                            <Text style={styles.headerText}>Distributors List</Text>
-                        </View>
                         <View style={styles.searchBox}>
-                            <View style={{ flexDirection: 'row', justifyContent: 'center', display: "flex", marginHorizontal: 10 }}>
-                                <View style={{ width: SCREEN.WIDTH / 2.3, padding: 5 }}>
-                                    <Text style={{ marginLeft: 5 }}>From Date</Text>
-                                    <DatePickerModal
-                                        value={this.state.fromDate}
-                                        onConfirm={(data) => { this.setState({ fromDate: data }) }}
-                                        placeholder='DD/MM/YY'
-                                        onCancel={() => { }}
-                                        mode="date"
-                                    />
-                                </View>
-                                <View style={{ width: SCREEN.WIDTH / 2.3, padding: 5 }}>
-                                    <Text style={{ marginLeft: 5 }}>To Date</Text>
-                                    <DatePickerModal
-                                        value={this.state.toDate}
-                                        placeholder='DD/MM/YY'
-                                        onConfirm={(data) => { this.setState({ toDate: data }) }}
-                                        onCancel={() => { }}
-                                        mode="date"
-                                    />
-                                </View>
-                            </View>
-                            {/* <View  style={{ ...styles.searchField, marginBottom: 10 }}>
-                                <FontAwesome5 name="file-invoice" size={17} color="#8c80ff" style={{ marginHorizontal: 10 }} />
-                                <TextInput placeholder='DrugsBazar ID' placeholderTextColor={"gray"} style={{ width: "85%", fontSize: 14 }} onChangeText={(text) => console.log(text)} />
-                            </View>
-                            <View style={{ ...styles.searchField, marginBottom: 10 }}>
-                                <Entypo name="shop" size={17} color="#8c80ff" style={{ marginHorizontal: 10 }} />
-                                <TextInput placeholder='Comapny Name' placeholderTextColor={"gray"} style={{ width: "85%", fontSize: 14 }} onChangeText={(text) => console.log(text)} />
-                            </View>
 
-                            <View style={{ ...styles.searchField }}>
-                                <MaterialCommunityIcons name="town-hall" size={17} color="#8c80ff" style={{ marginHorizontal: 10 }} />
-                                <TextInput placeholder='Comapny Town' placeholderTextColor={"gray"} style={{ width: "85%", fontSize: 14 }} onChangeText={(text) => console.log(text)} />
-                            </View> */}
-
-                            <View style={styles.searchBottomRow}>
-                                {/* <TouchableOpacity style={styles.searchBottom}>
-                                    <Text style={{ color: "#1b00ff" }}>Search</Text>
-                                </TouchableOpacity> */}
-                                <View style={{width: "72%"}}>
-                                <SearchField />
-                                </View>
-
-                                <TouchableOpacity style={{ ...styles.searchIconField, borderColor: "#006600", }}>
-                                    <MaterialCommunityIcons name="microsoft-excel" size={20} color="#009900" />
-                                </TouchableOpacity>
-
-                                <TouchableOpacity style={{ ...styles.searchIconField, borderColor: "#ff3300" }}>
-                                    <FontAwesome5 name="file-pdf" size={19} color="#ff3300" />
-                                </TouchableOpacity>
+                            {/* <View style={styles.searchBottomRow}> */}
+                            <View style={{ width: "100%" }}>
+                                <SearchField onSearch={(text) => { this.props.getOfflineData('DistributorList', text) }} />
                             </View>
+                            {/* </View> */}
                         </View>
 
 
@@ -162,9 +116,9 @@ const styles = StyleSheet.create({
 
     searchField: { width: "90%", alignSelf: "center", flexDirection: "row", borderWidth: 0.5, borderRadius: 5, borderColor: "#bfbfbf", display: "flex", alignItems: "center", height: 40 },
 
-    tableBody: { borderWidth: 0.5, borderColor: "#1b00ff", borderRadius: 7, width: "97%", alignSelf: "center", marginBottom: "10%" },
+    tableBody: { borderWidth: 0.5, borderColor: "#1b00ff", borderRadius: 7, width: "97%", alignSelf: "center", marginBottom: "10%", marginTop:15 },
 
-    searchBox: { marginBottom: 15, width: "95%", borderWidth: 0.5, borderRadius: 5, paddingBottom: 10, paddingTop: 10, alignSelf: "center" },
+    searchBox: { width: "95%", borderWidth: 0.5, borderRadius: 5, alignSelf: "center", padding: 10, paddingBottom: 0 },
     searchBottomRow: { flexDirection: "row", display: "flex", justifyContent: "space-between", width: "90%", alignSelf: "center" },
     searchBottom: { width: "72%", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 5, borderWidth: 0.5, borderColor: "#1b00ff", height: 38, backgroundColor: "#e8e6ff" },
     searchIconField: { width: "12%", display: "flex", justifyContent: "center", alignItems: "center", height: 38, borderWidth: 0.5, borderRadius: 5 }
@@ -179,6 +133,7 @@ export const mapStateToProps = (store) => {
 
 export const mapDispatchToProps = (dispatch) => {
     return {
+        getOfflineData: (type, search) => dispatch(getOfflineData(type, search))
     }
 }
 

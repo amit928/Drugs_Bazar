@@ -61,13 +61,9 @@ export class SalesInvoice extends Component {
     return (
       <View>
 
-        <Header />
+        <Header icon={'back'} header={'Sales Invoice'} />
         <ScrollView>
           <View style={styles.table}>
-            <View>
-              <Text style={styles.headerText}>Sales Invoice</Text>
-            </View>
-
             <View style={styles.searchBox}>
               <View style={{ marginHorizontal: 10, width: "93%", paddingVertical: 5, display:"flex", alignSelf:"center" }}>
                 <Text style={{marginBottom:5}}>Chalan No</Text>

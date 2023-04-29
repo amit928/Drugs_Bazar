@@ -9,7 +9,7 @@ import Foundation from 'react-native-vector-icons/Foundation';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { connect } from 'react-redux';
-import { createTable, getData, } from '../Redux/action';
+import { createTable, deleteTable, getData, } from '../Redux/action';
 import Header from '../common/Header';
 import NetInfo from "@react-native-community/netinfo";
 import { formatDateTime } from '../library/Constants';
@@ -50,6 +50,7 @@ class Home extends Component {
   }
 
   componentDidMount = () => {
+    // this.props.deleteTable('DistributorProductCount')
     this.props.getData();
     NetInfo.fetch().then(state => {
       this.setState({ internetStatus: state.isConnected })
@@ -94,7 +95,7 @@ class Home extends Component {
   render() {
     return (
       <View>
-        <Header />
+        <Header icon={'home'} />
         <ScrollView style={{ height: "93%" }}>
           <View style={styles.header}>
             <View style={{ width: "40%", height: "100%", paddingVertical: 4, marginLeft: 15 }}>
@@ -176,9 +177,9 @@ class Home extends Component {
                   return (
                     <View key={index} style={{ width: "25%", paddingVertical: 8 }}>
                       <TouchableOpacity style={styles.icons} onPress={() => {
-                        if (item.navigation !== 'DistributorProduct') {
-                          this.props.createTable(this.props.dashboardDetails.drgbzrid, item.navigation);
-                        }
+                        // if (item.navigation !== 'DistributorProduct') {
+                        this.props.createTable(this.props.dashboardDetails.drgbzrid, item.navigation);
+                        // }
                         this.props.navigation.navigate(item.navigation)
                       }}>
                         {item.icon}
@@ -261,6 +262,7 @@ export const mapDispatchToProps = (dispatch) => {
   return {
     getData: () => dispatch(getData()),
     createTable: (id, type) => dispatch(createTable(id, type)),
+    deleteTable: (type) => dispatch(deleteTable(type)),
   };
 };
 

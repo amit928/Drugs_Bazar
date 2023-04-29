@@ -50,12 +50,9 @@ class ExpiryProduct extends Component {
     render() {
         return (
             <View>
-                <Header />
+                <Header icon={'back'} header={'Expiry Product List'} />
                 <ScrollView>
                     <View style={styles.table}>
-                        <View>
-                            <Text style={styles.headerText}>Expiry Product List</Text>
-                        </View>
                         <View style={styles.searchBox}>
                             <View style={{ flexDirection: 'row', justifyContent: 'center', display: "flex", marginHorizontal: 10 }}>
                                 <View style={{ width: SCREEN.WIDTH / 2.3, padding: 5 }}>

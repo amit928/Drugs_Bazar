@@ -16,7 +16,7 @@ export default class Profile extends Component {
   }
 
   onBackPress = () => {
-    this.props.navigation.navigate('Dashboard');
+    this.props.navigation.navigate('Home');
     return true
   };
 
@@ -32,7 +32,7 @@ export default class Profile extends Component {
   render() {
     return (
       <View style={{ width: "100%", height: "100%" }}>
-        <Header />
+        <Header icon={'back'} header={'Profile'} />
         <TouchableOpacity style={{ width: "100%", height: "7%", display: "flex", justifyContent: "center", alignItems: "center", backgroundColor: "#1b00ff", position: "absolute", bottom: 0 }} onPress={this.onLogout}>
           <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 16 }}>Logout</Text>
         </TouchableOpacity>

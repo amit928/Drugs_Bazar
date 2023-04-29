@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 
 class Loader extends Component {
   render() {
+    // console.log("I am calling", this.props.loading)
     return (
       <Modal
         animationType="slide"
