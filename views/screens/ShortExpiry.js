@@ -10,6 +10,8 @@ import { connect } from 'react-redux';
 import { SCREEN } from '../library/Constants';
 import DatePickerModal from '../common/DatePickerModal';
 import SearchField from '../common/SearchField';
+import { getOfflineData } from '../Redux/action';
+import Pagination from '../common/Pagination';
 
 
 const tableData = [
@@ -34,6 +36,7 @@ class ShortExpiry extends Component {
 
     componentDidMount = () => {
         BackHandler.addEventListener('hardwareBackPress', this.onBackPress);
+        // this.props.getOfflineData('ShortExpiry');
     }
 
     onBackPress = () => {
@@ -53,7 +56,7 @@ class ShortExpiry extends Component {
                 <ScrollView>
                     <View style={styles.table}>
                         <View style={styles.searchBox}>
-                            <View style={{ flexDirection: 'row', justifyContent: 'center', display: "flex", marginHorizontal: 10 }}>
+                            {/* <View style={{ flexDirection: 'row', justifyContent: 'center', display: "flex", marginHorizontal: 10 }}>
                                 <View style={{ width: SCREEN.WIDTH / 2.3, padding: 5 }}>
                                     <Text style={{ marginLeft: 5 }}>From Date</Text>
                                     <DatePickerModal
@@ -74,41 +77,22 @@ class ShortExpiry extends Component {
                                         mode="date"
                                     />
                                 </View>
-                            </View>
-                            {/* <View style={{ ...styles.searchField, marginBottom: 10 }}>
-                                <Entypo name="shop" size={17} color="#8c80ff" style={{ marginHorizontal: 10 }} />
-                                <TextInput placeholder='Comapny Name' placeholderTextColor={"gray"} style={{ width: "85%", fontSize: 14 }} onChangeText={(text) => console.log(text)} />
-                            </View>
-
-                            <View style={{ ...styles.searchField, marginBottom: 10 }}>
-                                <MaterialCommunityIcons name="town-hall" size={17} color="#8c80ff" style={{ marginHorizontal: 10 }} />
-                                <TextInput placeholder='Comapny Town' placeholderTextColor={"gray"} style={{ width: "85%", fontSize: 14 }} onChangeText={(text) => console.log(text)} />
-                            </View>
-
-                            <View style={{ ...styles.searchField, marginBottom: 10 }}>
-                                <FontAwesome name="tag" size={17} color="#8c80ff" style={{ marginHorizontal: 10 }} />
-                                <TextInput placeholder='Batch No' placeholderTextColor={"gray"} style={{ width: "85%", fontSize: 14 }} onChangeText={(text) => console.log(text)} />
-                            </View>
-
-                            <View style={styles.searchField}>
-                                <FontAwesome5 name="file-invoice" size={17} color="#8c80ff" style={{ marginHorizontal: 10 }} />
-                                <TextInput placeholder='Invoice No' placeholderTextColor={"gray"} style={{ width: "85%", fontSize: 14 }} onChangeText={(text) => console.log(text)} />
                             </View> */}
                             <View style={styles.searchBottomRow}>
                                 {/* <TouchableOpacity style={styles.searchBottom}>
                                     <Text style={{ color: "#1b00ff" }}>Search</Text>
                                 </TouchableOpacity> */}
-                                <View style={{ width: "72%" }}>
-                                    <SearchField />
+                                <View style={{ width: "100%" }}>
+                                    <SearchField onSearch={(text) => { this.props.getOfflineData('ShortExpiry', text) }} placeholderText={'Search Comapany Name'} />
                                 </View>
 
-                                <TouchableOpacity style={{ ...styles.searchIconField, borderColor: "#006600", }}>
+                                {/* <TouchableOpacity style={{ ...styles.searchIconField, borderColor: "#006600", }}>
                                     <MaterialCommunityIcons name="microsoft-excel" size={20} color="#009900" />
                                 </TouchableOpacity>
 
                                 <TouchableOpacity style={{ ...styles.searchIconField, borderColor: "#ff3300" }}>
                                     <FontAwesome5 name="file-pdf" size={19} color="#ff3300" />
-                                </TouchableOpacity>
+                                </TouchableOpacity> */}
                             </View>
                         </View>
 
@@ -162,6 +146,8 @@ class ShortExpiry extends Component {
                                     </View>
                                 </ScrollView>
                             </View>}
+
+                        <Pagination onPress={(currentPage) => { this.props.getOfflineData('ShortExpiry', '', currentPage) }} />
                     </View>
                 </ScrollView>
             </View>
@@ -170,15 +156,15 @@ class ShortExpiry extends Component {
 }
 
 const styles = StyleSheet.create({
-    table: { width: "95%", backgroundColor: "#fff", borderRadius: 7, marginTop: 10, alignSelf: "center", paddingVertical: 20 },
+    table: { width: "95%", backgroundColor: "#fff", borderRadius: 7, marginTop: 10, alignSelf: "center", paddingVertical: 20, marginBottom: "10%" },
     headerText: { fontWeight: "700", fontSize: 17, color: "black", marginLeft: 10, marginBottom: 15 },
 
     searchField: { width: "90%", alignSelf: "center", flexDirection: "row", borderWidth: 0.5, borderRadius: 5, borderColor: "#bfbfbf", display: "flex", alignItems: "center", height: 40 },
 
-    tableBody: { borderWidth: 0.5, borderColor: "#1b00ff", borderRadius: 7, width: "97%", alignSelf: "center", marginBottom: "10%" },
+    tableBody: { borderWidth: 0.5, borderColor: "#1b00ff", borderRadius: 7, width: "97%", alignSelf: "center", marginBottom: "3%" },
 
     searchBox: { marginBottom: 15, width: "95%", borderWidth: 0.5, borderRadius: 5, paddingBottom: 10, paddingTop: 10, alignSelf: "center" },
-    searchBottomRow: { flexDirection: "row", display: "flex", justifyContent: "space-between", width: "90%", alignSelf: "center" },
+    searchBottomRow: { flexDirection: "row", display: "flex", justifyContent: "space-between", width: "90%", alignSelf: "center", paddingVertical: 10 },
     searchBottom: { width: "72%", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 5, borderWidth: 0.5, borderColor: "#1b00ff", height: 38, backgroundColor: "#e8e6ff" },
     searchIconField: { width: "12%", display: "flex", justifyContent: "center", alignItems: "center", height: 38, borderWidth: 0.5, borderRadius: 5 }
 })
@@ -192,6 +178,7 @@ export const mapStateToProps = (store) => {
 
 export const mapDispatchToProps = (dispatch) => {
     return {
+        getOfflineData: (type, search, currentPage) => dispatch(getOfflineData(type, search, currentPage))
     }
 }
 

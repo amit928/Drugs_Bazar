@@ -19,6 +19,8 @@ import Loader from './views/common/Loader';
 import DistributorProduct from './views/screens/DistributorProduct';
 import Profile from './views/screens/Profile';
 import SalesInvoice from './views/screens/SalesInvoice';
+import DistributorOrder from './views/screens/DistributorOrder';
+import DistributorStatement from './views/screens/DistributorStatement';
 
 const Stack = createNativeStackNavigator();
 const store = configureStore()
@@ -43,6 +45,8 @@ export default function App() {
           <Stack.Screen name="DistributorProduct" component={DistributorProduct} options={{ headerShown: false }} />
           <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
           <Stack.Screen name="SalesInvoice" component={SalesInvoice} options={{ headerShown: false }} />
+          <Stack.Screen name="DistributorOrder" component={DistributorOrder} options={{ headerShown: false }} />
+          <Stack.Screen name="DistributorStatement" component={DistributorStatement} options={{ headerShown: false }} />
 
           {/* <Stack.Screen name="Drawer" component={MyDrawer} options={{ headerShown: false }} /> */}
 

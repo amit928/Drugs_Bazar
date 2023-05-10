@@ -60,3 +60,6 @@ export function formatDateTime(date) {
     }
     return `${myDate}/${month}/${date.getFullYear()}, ${hour}:${minutes}:${seconds}`
 }
+
+
+export const rowsPerPage = 50

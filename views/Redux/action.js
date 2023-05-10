@@ -1,5 +1,5 @@
-import { BASE_URL, db } from "../library/Constants";
-import { DASHBOARD_DETAILS, DISTRIBUTORS_LIST, DISTRIBUTORS_PRODUCT_COUNT, DISTRIBUTORS_PRODUCT_LIST, EXPIRY_PRODUCT_LIST, INVOICE_LIST, LOADING_END, LOADING_START, SALES_INVOICE_COUNT, SHORT_EXPIRY_LIST } from "./actionType";
+import { BASE_URL, db, rowsPerPage } from "../library/Constants";
+import { DASHBOARD_DETAILS, DISTRIBUTORS_LIST, DISTRIBUTORS_PRODUCT_COUNT, DISTRIBUTORS_PRODUCT_LIST, EXPIRY_PRODUCT_LIST, INVOICE_LIST, LIST_COUNT, LOADING_END, LOADING_START, SALES_INVOICE_COUNT, SHORT_EXPIRY_LIST } from "./actionType";
 import * as RootNavigation from '../navigation/Rootnavigation.js';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
@@ -33,7 +33,8 @@ export function getData() {
             if (value !== null) {
                 // RootNavigation.navigate('Drawer', 'Home')
                 dispatch({ type: DASHBOARD_DETAILS, payload: JSON.parse(value) })
-                dispatch(createTable(JSON.parse(value).drgbzrid, 'DistributorProductCount'));
+                // dispatch(createTable(JSON.parse(value).drgbzrid, 'DistributorProductCount'));
+                dispatch(fetchDataList(JSON.parse(value).drgbzrid, 'DistributorProductCount'))
                 dispatch({ type: LOADING_END })
             }
             else {
@@ -66,10 +67,10 @@ export function createTable(drugsBazarId, type) {
                         + `${nameList(type).tableName} `
                         + nameList(type).tableKeysType
                     )
+
+                    dispatch({ type: LOADING_END })
                 })
-                // console.log("type", type)
                 dispatch(fetchDataList(drugsBazarId, type))
-                dispatch({ type: LOADING_END })
 
             }
             else {
@@ -86,61 +87,56 @@ export const setData = (list, type) => {
         dispatch({ type: LOADING_START })
         db.transaction(async (tx) => {
             await list.length > 0 && list.map(async (item, index) => {
+                console.log("index", index)
                 await tx.executeSql(
                     `INSERT INTO ${nameList(type).tableName} ${nameList(type).tableKeys} VALUES ${nameList(type).tableQsMarks}`,
                     nameList(type, item).tableValues
                 )
             })
-            if (type == 'SalesInvoiceTable') {
-                dispatch(getOfflineData(type))
-            }
-            dispatch({ type: LOADING_END })
+            dispatch(getOfflineData(type))
+            // if (type == 'SalesInvoiceTable') {
+            //     dispatch(getOfflineData(type))
+            // }
+            // dispatch({ type: LOADING_END })
         });
 
     }
 
 }
 
-export const getOfflineData = (type, search = '') => {
+export const getOfflineData = (type, search = '', page = 1) => {
+
     return function (dispatch) {
-        dispatch({ type: LOADING_START })
         var list = []
         db.transaction((tx) => {
-            // if (type == 'DistributorProduct') {
-            //     tx.executeSql(
-            //         `SELECT compid, pname, ppack, sysprd FROM ${nameList(type).tableName} WHERE pname = ${search}`,
-            //         [],
-            //         (tx, results) => {
-            //             var len = results.rows.length;
-            //             for (var i = 0; i < len; i++) {
-            //                 list.push(results.rows.item(i))
-            //             }
-            //             dispatch(setDataToRedux(list, type))
-            //         }
-            //     )
-            //     dispatch({ type: LOADING_END })
-            // }
-            // else {
             if (search !== '') {
                 tx.executeSql(
-                    `SELECT * FROM ${nameList(type).tableName} WHERE COMPID = ${search}`,
-                    [],
+                    searchQueryType(type),
+                    searchQueryArray(type, search),
                     (tx, results) => {
-                        console.log("results", results)
                         var len = results.rows.length;
+                        dispatch({ type: LIST_COUNT, payload: results.rows.length })
                         for (var i = 0; i < len; i++) {
                             list.push(results.rows.item(i))
                         }
                         dispatch(setDataToRedux(list, type))
-                        dispatch({ type: LOADING_END })
                     }
                 )
 
             }
             else {
+                dispatch({ type: LOADING_START })
                 tx.executeSql(
                     `SELECT * FROM ${nameList(type).tableName}`,
                     [],
+                    (tx, results) => {
+                        dispatch({ type: LIST_COUNT, payload: results.rows.length })
+                        console.log("type", type, results.rows.length)
+                    }
+                )
+                tx.executeSql(
+                    `SELECT * FROM ${nameList(type).tableName} LIMIT ? OFFSET ?`,
+                    [rowsPerPage, (page - 1) * rowsPerPage],
                     (tx, results) => {
                         var len = results.rows.length;
                         for (var i = 0; i < len; i++) {
@@ -151,8 +147,6 @@ export const getOfflineData = (type, search = '') => {
                     }
                 )
             }
-
-            // }
 
         })
     }
@@ -185,6 +179,34 @@ export function onLogin(body, isChecked) {
     }
 }
 
+export function fetchDistributorList(id, type) {
+    const requestOptions = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            "dbzrid": id,
+            "dtyp": "1"
+        })
+    };
+    return function (dispatch) {
+        dispatch({ type: LOADING_START })
+        fetch(`${BASE_URL}api/distributorslist`, requestOptions)
+            .then(response => response.json())
+            .then(data => {
+                if (data.Code == '200') {
+                    dispatch(setData(data.data_value, type))
+                    dispatch({ type: DISTRIBUTORS_LIST, payload: data.data_value })
+                }
+                else {
+                    alert(data.msg)
+                    dispatch({ type: LOADING_END })
+                }
+            })
+    }
+}
+
 export function fetchInvoiceList(id, type) {
     const requestOptions = {
         method: 'GET',
@@ -200,7 +222,6 @@ export function fetchInvoiceList(id, type) {
                 if (data.Code == '200') {
                     dispatch(setData(data.data_value, type))
                     dispatch({ type: INVOICE_LIST, payload: data.data_value })
-                    dispatch({ type: LOADING_END })
                 }
                 else {
                     alert(data.msg)
@@ -224,8 +245,8 @@ export function fetchShortExpiry(id, type) {
             .then(data => {
                 if (data.Code == '200') {
                     dispatch(setData(data.data_value, type))
-                    dispatch({ type: SHORT_EXPIRY_LIST, payload: data.data_value })
-                    dispatch({ type: LOADING_END })
+                    // dispatch({ type: SHORT_EXPIRY_LIST, payload: data.data_value })
+                    // dispatch({ type: LOADING_END })
                 }
                 else {
                     alert(data.msg)
@@ -250,7 +271,6 @@ export function fetchExpiryProduct(id, type) {
                 if (data.Code == '200') {
                     dispatch(setData(data.data_value, type))
                     dispatch({ type: EXPIRY_PRODUCT_LIST, payload: data.data_value })
-                    dispatch({ type: LOADING_END })
                 }
                 else {
                     alert(data.msg)
@@ -260,34 +280,6 @@ export function fetchExpiryProduct(id, type) {
     }
 }
 
-export function fetchDistributorList(id, type) {
-    const requestOptions = {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            "dbzrid": id,
-            "dtyp": "1"
-        })
-    };
-    return function (dispatch) {
-        dispatch({ type: LOADING_START })
-        fetch(`${BASE_URL}api/distributorslist`, requestOptions)
-            .then(response => response.json())
-            .then(data => {
-                if (data.Code == '200') {
-                    dispatch(setData(data.data_value, type))
-                    // dispatch({ type: DISTRIBUTORS_LIST, payload: data.data_value })
-                    dispatch({ type: LOADING_END })
-                }
-                else {
-                    alert(data.msg)
-                    dispatch({ type: LOADING_END })
-                }
-            })
-    }
-}
 
 export function fetchDistributorProductList(id, type) {
     const requestOptions = {
@@ -334,7 +326,7 @@ export function fetchProductCount(id, type) {
             .then(response => response.json())
             .then(data => {
                 if (data.Code == '200') {
-                    dispatch(setData(data.data_value, type))
+                    // dispatch(setData(data.data_value, type))
                     dispatch({ type: DISTRIBUTORS_PRODUCT_COUNT, payload: data.data_value })
                     dispatch({ type: LOADING_END })
                 }
@@ -413,7 +405,6 @@ export const tableCreation = (type) => {
 }
 
 export const addSalesInvoiceData = (data, type) => {
-    // console.log(data, type)
     return function (dispatch) {
         dispatch({ type: LOADING_START })
         dispatch(setData(data, type))
@@ -421,4 +412,30 @@ export const addSalesInvoiceData = (data, type) => {
     }
 }
 
+export const searchQueryType = (type) => {
+    switch (type) {
+        case 'DistributorList':
+            return `SELECT * FROM ${nameList(type).tableName} WHERE COMPNAME LIKE ? OR DRGBZRID LIKE ? OR COMPTOWN LIKE ?`
+        case 'Invoice':
+            return `SELECT * FROM ${nameList(type).tableName} WHERE invno LIKE ? OR compname LIKE ? OR comptown LIKE ? OR invdt LIKE ?`
+        case 'ShortExpiry':
+            return `SELECT * FROM ${nameList(type).tableName} WHERE invno LIKE ? OR compname LIKE ? OR comptown LIKE ? OR invdt LIKE ?`
 
+        default:
+            break;
+    }
+}
+
+export const searchQueryArray = (type, search) => {
+    switch (type) {
+        case 'DistributorList':
+            return [`%${search}%`, `%${search}%`, `%${search}%`]
+        case 'Invoice':
+            return [`%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`]
+        case 'ShortExpiry':
+            return `SELECT * FROM ${nameList(type).tableName} WHERE ID = 1`
+
+        default:
+            break;
+    }
+}

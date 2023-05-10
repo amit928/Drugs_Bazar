@@ -9,6 +9,8 @@ import { connect } from 'react-redux';
 import { SCREEN } from '../library/Constants';
 import DatePickerModal from '../common/DatePickerModal';
 import SearchField from '../common/SearchField';
+import { getOfflineData } from '../Redux/action';
+import Pagination from '../common/Pagination';
 
 const tableData = [
     { headerName: "Invoice No", width: 90 },
@@ -30,6 +32,7 @@ class Invoice extends Component {
 
     componentDidMount = () => {
         BackHandler.addEventListener('hardwareBackPress', this.onBackPress);
+        // this.props.getOfflineData('Invoice');
     }
 
     onBackPress = () => {
@@ -49,7 +52,7 @@ class Invoice extends Component {
                 <ScrollView>
                     <View style={styles.table}>
                         <View style={styles.searchBox}>
-                            <View style={{ flexDirection: 'row', justifyContent: 'center', display: "flex", marginHorizontal: 10 }}>
+                            {/* <View style={{ flexDirection: 'row', justifyContent: 'center', display: "flex", marginHorizontal: 10 }}>
                                 <View style={{ width: SCREEN.WIDTH / 2.3, padding: 5 }}>
                                     <Text style={{ marginLeft: 5 }}>From Date</Text>
                                     <DatePickerModal
@@ -70,37 +73,11 @@ class Invoice extends Component {
                                         mode="date"
                                     />
                                 </View>
-                            </View>
-                            {/* <View style={{ ...styles.searchField, marginBottom: 10 }}>
-                                <Entypo name="shop" size={17} color="#8c80ff" style={{ marginHorizontal: 10 }} />
-                                <TextInput placeholder='Comapny Name' placeholderTextColor={"gray"} style={{ width: "85%", fontSize: 14 }} onChangeText={(text) => console.log(text)} />
-                            </View>
-
-                            <View style={{ ...styles.searchField, marginBottom: 10 }}>
-                                <MaterialCommunityIcons name="town-hall" size={17} color="#8c80ff" style={{ marginHorizontal: 10 }} />
-                                <TextInput placeholder='Comapny Town' placeholderTextColor={"gray"} style={{ width: "85%", fontSize: 14 }} onChangeText={(text) => console.log(text)} />
-                            </View>
-
-                            <View style={styles.searchField}>
-                                <FontAwesome5 name="file-invoice" size={17} color="#8c80ff" style={{ marginHorizontal: 10 }} />
-                                <TextInput placeholder='Invoice No' placeholderTextColor={"gray"} style={{ width: "85%", fontSize: 14 }} onChangeText={(text) => console.log(text)} />
                             </View> */}
                             <View style={styles.searchBottomRow}>
-                                {/* <TouchableOpacity style={styles.searchBottom}>
-                                    <Text style={{ color: "#1b00ff" }}>Search</Text>
-                                </TouchableOpacity> */}
-
-                                <View style={{ width: "72%" }}>
-                                    <SearchField />
+                                <View style={{ width: "100%" }}>
+                                    <SearchField onSearch={(text) => { this.props.getOfflineData('Invoice', text) }} placeholderText={'Search Comapany Name'} />
                                 </View>
-
-                                <TouchableOpacity style={{ ...styles.searchIconField, borderColor: "#006600", }}>
-                                    <MaterialCommunityIcons name="microsoft-excel" size={20} color="#009900" />
-                                </TouchableOpacity>
-
-                                <TouchableOpacity style={{ ...styles.searchIconField, borderColor: "#ff3300" }}>
-                                    <FontAwesome5 name="file-pdf" size={19} color="#ff3300" />
-                                </TouchableOpacity>
                             </View>
                         </View>
 
@@ -109,7 +86,7 @@ class Invoice extends Component {
                             <View style={styles.tableBody}>
                                 <ScrollView horizontal={true}  >
                                     <View style={{ borderRadius: 5 }}>
-                                        <View style={{ flexDirection: "row", borderBottomWidth: 0.2, borderBottomColor: "gray", backgroundColor: "#1b00ff", borderTopLeftRadius: 5, borderTopRightRadius: 5 }}>
+                                        <View style={{ flexDirection: "row", borderBottomWidth: 0.2, borderBottomColor: "gray", backgroundColor: "#1b00ff", borderTopLeftRadius: 5, borderTopRightRadius: 5, paddingEnd: 10 }}>
                                             {
                                                 tableData.map((item, index) => {
                                                     return (
@@ -124,7 +101,7 @@ class Invoice extends Component {
                                             {
                                                 this.props.invoiceList && this.props.invoiceList.length > 0 && this.props.invoiceList.map((item, index) => {
                                                     return (
-                                                        <View key={index} style={{ flexDirection: "row", paddingVertical: 8, backgroundColor: index % 2 !== 0 ? "#e8e6ff" : "#fff", display: "flex", alignItems: "center" }}>
+                                                        <View key={index} style={{ flexDirection: "row", paddingVertical: 8, backgroundColor: index % 2 !== 0 ? "#e8e6ff" : "#fff", display: "flex", alignItems: "center", paddingEnd: 10 }}>
                                                             <View style={{ width: 90, display: "flex", alignItems: "center" }}>
                                                                 <Text style={{ fontSize: 12 }}>{item.invno}</Text>
                                                             </View>
@@ -140,8 +117,9 @@ class Invoice extends Component {
                                                             <View style={{ width: 90, display: "flex", alignItems: "center" }}>
                                                                 <Text style={{ fontSize: 12 }}>{item.invamt}</Text>
                                                             </View>
-                                                            <TouchableOpacity style={{ width: 80, display: "flex", alignItems: "center" }}>
-                                                                <Entypo name='dots-three-horizontal' size={18} color="#4433ff" />
+                                                            <TouchableOpacity style={{ width: 80, display: "flex", alignItems: "center", padding: 5, borderRadius: 5, backgroundColor: "#1b00ff" }}>
+                                                                {/* <Entypo name='dots-three-horizontal' size={18} color="#4433ff" /> */}
+                                                                <Text style={{ color: "#fff" }}>View</Text>
                                                             </TouchableOpacity>
                                                         </View>
                                                     )
@@ -151,6 +129,8 @@ class Invoice extends Component {
                                     </View>
                                 </ScrollView>
                             </View>}
+
+                        <Pagination onPress={(currentPage) => { this.props.getOfflineData('Invoice', '', currentPage) }} />
                     </View>
                 </ScrollView>
             </View>
@@ -159,12 +139,12 @@ class Invoice extends Component {
 }
 
 const styles = StyleSheet.create({
-    table: { width: "95%", backgroundColor: "#fff", borderRadius: 7, marginTop: 10, alignSelf: "center", paddingVertical: 20 },
+    table: { width: "95%", backgroundColor: "#fff", borderRadius: 7, marginTop: 10, alignSelf: "center", paddingVertical: 20 , marginBottom:"10%"},
     headerText: { fontWeight: "700", fontSize: 17, color: "black", marginLeft: 10, marginBottom: 15 },
 
     searchField: { width: "90%", alignSelf: "center", flexDirection: "row", borderWidth: 0.5, borderRadius: 5, borderColor: "#bfbfbf", display: "flex", alignItems: "center", height: 40 },
 
-    tableBody: { borderWidth: 0.5, borderColor: "#1b00ff", borderRadius: 7, width: "97%", alignSelf: "center", marginBottom: "10%" },
+    tableBody: { borderWidth: 0.5, borderColor: "#1b00ff", borderRadius: 7, width: "97%", alignSelf: "center", marginBottom: "3%" },
 
     searchBox: { marginBottom: 15, width: "95%", borderWidth: 0.5, borderRadius: 5, paddingBottom: 10, paddingTop: 10, alignSelf: "center" },
     searchBottomRow: { flexDirection: "row", display: "flex", justifyContent: "space-between", width: "90%", alignSelf: "center" },
@@ -181,6 +161,7 @@ export const mapStateToProps = (store) => {
 
 export const mapDispatchToProps = (dispatch) => {
     return {
+        getOfflineData: (type, search, currentPage) => dispatch(getOfflineData(type, search, currentPage))
     }
 }
 

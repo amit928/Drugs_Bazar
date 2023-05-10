@@ -1,4 +1,4 @@
-import { DASHBOARD_DETAILS, DISTRIBUTORS_LIST, DISTRIBUTORS_PRODUCT_COUNT, DISTRIBUTORS_PRODUCT_LIST, EXPIRY_PRODUCT_LIST, INVOICE_LIST, LOADING_END, LOADING_START, LOGIN_DETAILS, SALES_INVOICE_COUNT, SHORT_EXPIRY_LIST, } from "./actionType";
+import { DASHBOARD_DETAILS, DISTRIBUTORS_LIST, DISTRIBUTORS_PRODUCT_COUNT, DISTRIBUTORS_PRODUCT_LIST, EXPIRY_PRODUCT_LIST, INVOICE_LIST, LIST_COUNT, LOADING_END, LOADING_START, LOGIN_DETAILS, SALES_INVOICE_COUNT, SHORT_EXPIRY_LIST, } from "./actionType";
 
 const initialState = {
     loading: false,
@@ -12,7 +12,8 @@ const initialState = {
     distributorsList: [],
     distributorsProductList: [],
     distributorsProductCount: [],
-    salesInvoiceCount: []
+    salesInvoiceCount: [],
+    listCount: 0
 };
 const allInOneReducer = (state = initialState, action) => {
     switch (action.type) {
@@ -70,6 +71,11 @@ const allInOneReducer = (state = initialState, action) => {
             return {
                 ...state,
                 salesInvoiceList: action.payload
+            };
+        case LIST_COUNT:
+            return {
+                ...state,
+                listCount: action.payload
             };
         default:
             return state;
