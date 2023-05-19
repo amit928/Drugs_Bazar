@@ -50,7 +50,7 @@ class Home extends Component {
   }
 
   componentDidMount = () => {
-    // this.props.deleteTable('DistributorProductCount')
+    // this.props.deleteTable('ShortExpiry')
     this.props.getData();
     NetInfo.fetch().then(state => {
       this.setState({ internetStatus: state.isConnected })

@@ -87,7 +87,6 @@ export const setData = (list, type) => {
         dispatch({ type: LOADING_START })
         db.transaction(async (tx) => {
             await list.length > 0 && list.map(async (item, index) => {
-                console.log("index", index)
                 await tx.executeSql(
                     `INSERT INTO ${nameList(type).tableName} ${nameList(type).tableKeys} VALUES ${nameList(type).tableQsMarks}`,
                     nameList(type, item).tableValues
@@ -131,7 +130,6 @@ export const getOfflineData = (type, search = '', page = 1) => {
                     [],
                     (tx, results) => {
                         dispatch({ type: LIST_COUNT, payload: results.rows.length })
-                        console.log("type", type, results.rows.length)
                     }
                 )
                 tx.executeSql(

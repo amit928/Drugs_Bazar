@@ -8,16 +8,22 @@ class Pagination extends Component {
         super(props)
 
         this.state = {
-            currentPage: 1
+            currentPage: 1,
+            listCount: 0
+        }
+    }
+    componentDidUpdate = (prevProps, prevState) => {
+        if (prevProps.listCount !== this.props.listCount) {
+            this.setState({listCount: this.props.listCount})
         }
     }
     render() {
         return (
             <View style={{ marginTop: 10, marginLeft: 10 }}>
 
-                <Text style={{fontWeight:"500"}}>Total Items : {this.props.listCount}</Text>
+                <Text style={{ fontWeight: "500" }}>Total Items : {this.state.listCount}</Text>
                 {
-                    this.props.listCount > rowsPerPage &&
+                    this.state.listCount > rowsPerPage &&
                     <View style={{ display: "flex", flexDirection: "row", marginTop: 10 }}>
                         <TouchableOpacity style={{ padding: 5, backgroundColor: "#e8e6ff", borderWidth: 0.5 }}
                             onPress={() => {
@@ -28,8 +34,8 @@ class Pagination extends Component {
                         <Text style={{ padding: 5, paddingHorizontal: 10, borderTopWidth: 0.5, borderBottomWidth: 0.5 }}>{this.state.currentPage}</Text>
 
                         <TouchableOpacity onPress={() => {
-                            this.state.currentPage * rowsPerPage < this.props.listCount && this.props.onPress(this.state.currentPage + 1);
-                            this.state.currentPage * rowsPerPage < this.props.listCount && this.setState({ currentPage: this.state.currentPage + 1 })
+                            this.state.currentPage * rowsPerPage < this.state.listCount && this.props.onPress(this.state.currentPage + 1);
+                            this.state.currentPage * rowsPerPage < this.state.listCount && this.setState({ currentPage: this.state.currentPage + 1 })
                         }}
                             style={{ padding: 5, backgroundColor: "#e8e6ff", borderWidth: 0.5 }}><Text>{"Next >"}</Text></TouchableOpacity>
                     </View>
